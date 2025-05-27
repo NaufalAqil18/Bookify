@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">Bookify</string>
+    <string name="payment_received">Payment received!</string>
+    <string name="order_validated">Your order has been validated.</string>
+
+    <!-- Checkout Main Screen -->
+    <string name="checkout">Checkout</string>
+    <string name="delivering_address">Delivering Address</string>
+    <string name="address_example">No.23, James Street, New\nTown, North Province</string>
+    <string name="change">Change</string>
+    <string name="add_new_delivery_address">Add a New Delivery Address</string>
+    <string name="pay_option">Pay Option</string>
+    <string name="pay_amount">Pay $60.00</string>
+
+    <!-- Checkout Delivering Address Screen -->
+    <string name="street_address">Street Address</string>
+    <string name="city">City</string>
+    <string name="postal_code">Postal Code</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
 </resources>
