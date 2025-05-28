@@ -1,4 +1,13 @@
 <resources>
+
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="signed">Sign Up</string>
+    <string name="already_have_an_account_login">Already have an account? Login</string>
+    <string name="login">Login</string>
+    <string name="don_t_have_an_account_sign_in">Don\'t have an account? Sign up</string>
+
     <string name="app_name">Bookify</string>
     <string name="payment_received">Payment received!</string>
     <string name="order_validated">Your order has been validated.</string>
@@ -18,4 +27,6 @@
     <string name="postal_code">Postal Code</string>
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
+
+
 </resources>
