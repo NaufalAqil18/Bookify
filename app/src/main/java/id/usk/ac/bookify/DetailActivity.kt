@@ -1,5 +1,6 @@
 package id.usk.ac.bookify
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +24,9 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var bookPrice: TextView
     private lateinit var bookDescription: TextView
     private lateinit var addToCartButton: Button
+    private lateinit var cartButton: ImageView
+
+    private var currentBook: Book? = null
 
     companion object {
         const val EXTRA_BOOK_ID = "extra_book_id"
@@ -47,6 +51,7 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("CutPasteId")
     private fun initViews() {
         Log.d(TAG, "🔧 Initializing views...")
 
@@ -59,12 +64,28 @@ class DetailActivity : AppCompatActivity() {
         bookDescription = findViewById(R.id.book_description)
         addToCartButton = findViewById(R.id.btn_add_to_cart)
 
+        // Initialize cart button if it exists in the layout
+        try {
+            cartButton = findViewById(R.id.btn_add_to_cart)
+            setupCartButton()
+        } catch (e: Exception) {
+            Log.d(TAG, "Cart button not found in layout, skipping cart button setup")
+        }
+
         Log.d(TAG, "✅ Views initialized successfully")
     }
 
     private fun setupRepository() {
         bookRepository = BookRepository()
         Log.d(TAG, "✅ Repository setup completed")
+    }
+
+    private fun setupCartButton() {
+        cartButton.setOnClickListener {
+            Log.d(TAG, "🛒 Cart button clicked")
+            val intent = Intent(this, CartActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun loadBookDetail(bookId: String) {
@@ -77,6 +98,7 @@ class DetailActivity : AppCompatActivity() {
 
                 if (book != null) {
                     Log.d(TAG, "✅ Book data received: ${book.title}")
+                    currentBook = book
                     runOnUiThread {
                         displayBookDetail(book)
                     }
@@ -116,8 +138,8 @@ class DetailActivity : AppCompatActivity() {
         Log.d(TAG, "⭐ Rating set: ${book.rating}/5")
 
         // Set book price
-        bookPrice.text = "$${book.price}"
-        Log.d(TAG, "💰 Price set: $${book.price}")
+        bookPrice.text = "$${String.format("%.2f", book.price)}"
+        Log.d(TAG, "💰 Price set: $${String.format("%.2f", book.price)}")
 
         // Set book description
         val description = if (book.description.isNotEmpty()) {
@@ -133,6 +155,9 @@ class DetailActivity : AppCompatActivity() {
 
         // Setup add to cart button
         setupAddToCartButton(book)
+
+        // Update add to cart button state
+        updateAddToCartButtonState(book)
 
         Log.d(TAG, "✅ All book details displayed successfully")
     }
@@ -162,27 +187,86 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
+    private fun updateAddToCartButtonState(book: Book) {
+        val isInCart = CartManager.isInCart(book.bookId)
+
+        if (isInCart) {
+            addToCartButton.text = "Already in Cart"
+            addToCartButton.isEnabled = false
+            addToCartButton.alpha = 0.6f
+            Log.d(TAG, "🔄 Button state updated: Already in cart")
+        } else {
+            addToCartButton.text = "Add to Cart"
+            addToCartButton.isEnabled = true
+            addToCartButton.alpha = 1.0f
+            Log.d(TAG, "🔄 Button state updated: Available to add")
+        }
+    }
+
     private fun addToCart(book: Book) {
         Log.d(TAG, "🛒 Adding to cart: ${book.title}")
 
-        // Show immediate feedback
-        Toast.makeText(this, "${book.title} added to cart!", Toast.LENGTH_SHORT).show()
+        try {
+            // Add book to cart using CartManager
+            CartManager.addToCart(book)
 
-        // TODO: Implement actual cart functionality
-        // Anda bisa menambahkan logika untuk:
-        // 1. Simpan ke SharedPreferences
-        // 2. Simpan ke Room Database
-        // 3. Simpan ke Firebase
-        // 4. Update cart counter di UI
-        // 5. Kirim ke server API
+            // Show success feedback
+            Toast.makeText(
+                this,
+                "${book.title} added to cart!",
+                Toast.LENGTH_SHORT
+            ).show()
 
-        Log.d(TAG, "✅ Successfully added to cart: ${book.title}")
-        Log.d(TAG, "💡 Cart implementation needed - currently just showing toast")
+            // Update button state
+            updateAddToCartButtonState(book)
+
+            // Optional: Show cart icon with animation or badge update
+            animateCartIcon()
+
+            Log.d(TAG, "✅ Successfully added to cart: ${book.title}")
+            Log.d(TAG, "📊 Current cart items: ${CartManager.getCartItemCount()}")
+
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Error adding book to cart: ${book.title}", e)
+            Toast.makeText(
+                this,
+                "Failed to add book to cart",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun animateCartIcon() {
+        try {
+            // Simple scale animation for cart button if it exists
+            cartButton.animate()
+                .scaleX(1.2f)
+                .scaleY(1.2f)
+                .setDuration(100)
+                .withEndAction {
+                    cartButton.animate()
+                        .scaleX(1.0f)
+                        .scaleY(1.0f)
+                        .setDuration(100)
+                        .start()
+                }
+                .start()
+        } catch (e: Exception) {
+            Log.d(TAG, "Cart icon animation skipped (cart button not available)")
+        }
     }
 
     private fun showError(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         Log.e(TAG, "❌ Error shown to user: $message")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Update button state when returning to this activity
+        currentBook?.let { book ->
+            updateAddToCartButtonState(book)
+        }
     }
 
     override fun onDestroy() {
