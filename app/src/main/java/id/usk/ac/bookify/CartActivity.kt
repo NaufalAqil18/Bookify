@@ -39,15 +39,21 @@ class CartActivity : AppCompatActivity(), CartManager.CartUpdateListener {
 
         Log.d(TAG, "🛒 CartActivity created")
 
-        initViews()
-        setupRecyclerView()
-        setupClickListeners()
-        setupBottomNavigation()
+        try {
+            initViews()
+            setupRecyclerView()
+            setupClickListeners()
+            setupBottomNavigation()
 
-        // Register for cart updates
-        CartManager.addCartUpdateListener(this)
+            // Register for cart updates
+            CartManager.addCartUpdateListener(this)
 
-        updateUI()
+            updateUI()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error initializing CartActivity", e)
+            Toast.makeText(this, "Error loading cart", Toast.LENGTH_SHORT).show()
+            finish()
+        }
     }
 
     override fun onDestroy() {
@@ -57,19 +63,24 @@ class CartActivity : AppCompatActivity(), CartManager.CartUpdateListener {
     }
 
     private fun initViews() {
-        cartRecyclerView = findViewById(R.id.cart_recycler_view)
-        emptyCartLayout = findViewById(R.id.empty_cart_layout)
-        cartContentLayout = findViewById(R.id.cart_content_layout)
-        orderSummaryLayout = findViewById(R.id.order_summary_layout)
+        try {
+            cartRecyclerView = findViewById(R.id.cart_recycler_view)
+            emptyCartLayout = findViewById(R.id.empty_cart_layout)
+            cartContentLayout = findViewById(R.id.cart_content_layout)
+            orderSummaryLayout = findViewById(R.id.order_summary_layout)
 
-        subtotalValue = findViewById(R.id.subtotal_value)
-        shippingValue = findViewById(R.id.shipping_value)
-        totalValue = findViewById(R.id.total_value)
+            subtotalValue = findViewById(R.id.subtotal_value)
+            shippingValue = findViewById(R.id.shipping_value)
+            totalValue = findViewById(R.id.total_value)
 
-        btnContinueShopping = findViewById(R.id.btn_continue_shopping)
-        btnCheckout = findViewById(R.id.btn_checkout)
+            btnContinueShopping = findViewById(R.id.btn_continue_shopping)
+            btnCheckout = findViewById(R.id.btn_checkout)
 
-        Log.d(TAG, "✅ Views initialized")
+            Log.d(TAG, "✅ Views initialized")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error initializing views", e)
+            throw e
+        }
     }
 
     private fun setupBottomNavigation() {
@@ -97,54 +108,69 @@ class CartActivity : AppCompatActivity(), CartManager.CartUpdateListener {
     }
 
     private fun setupRecyclerView() {
-        cartAdapter = CartAdapter(
-            cartItems = mutableListOf(),
-            onItemUpdate = { cartItem ->
-                Log.d(TAG, "🔄 Item updated: ${cartItem.book.title}")
-                updateOrderSummary()
-            },
-            onItemRemove = { cartItem ->
-                Log.d(TAG, "🗑️ Removing item: ${cartItem.book.title}")
-                CartManager.removeFromCart(cartItem)
-                cartAdapter.removeItem(cartItem)
+        try {
+            cartAdapter = CartAdapter(
+                cartItems = mutableListOf(),
+                onItemUpdate = { cartItem ->
+                    Log.d(TAG, "🔄 Item updated: ${cartItem.book.title}")
+                    updateOrderSummary()
+                },
+                onItemRemove = { cartItem ->
+                    Log.d(TAG, "🗑️ Removing item: ${cartItem.book.title}")
+                    CartManager.removeFromCart(cartItem)
+                    cartAdapter.removeItem(cartItem)
 
-                if (CartManager.getCartItems().isEmpty()) {
-                    updateUI()
+                    if (CartManager.getCartItems().isEmpty()) {
+                        updateUI()
+                    }
                 }
+            )
+
+            cartRecyclerView.apply {
+                adapter = cartAdapter
+                layoutManager = LinearLayoutManager(this@CartActivity)
             }
-        )
 
-        cartRecyclerView.apply {
-            adapter = cartAdapter
-            layoutManager = LinearLayoutManager(this@CartActivity)
+            Log.d(TAG, "✅ RecyclerView setup completed")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting up RecyclerView", e)
+            throw e
         }
-
-        Log.d(TAG, "✅ RecyclerView setup completed")
     }
 
     private fun setupClickListeners() {
-        btnContinueShopping.setOnClickListener {
-            Log.d(TAG, "🔙 Continue shopping clicked")
-            finish() // Go back to previous activity (MainActivity)
-        }
+        try {
+            btnContinueShopping.setOnClickListener {
+                Log.d(TAG, "🔙 Continue shopping clicked")
+                finish() // Go back to previous activity (MainActivity)
+            }
 
-        btnCheckout.setOnClickListener {
-            Log.d(TAG, "💳 Checkout clicked")
-            proceedToCheckout()
-        }
+            btnCheckout.setOnClickListener {
+                Log.d(TAG, "💳 Checkout clicked")
+                proceedToCheckout()
+            }
 
-        Log.d(TAG, "✅ Click listeners setup completed")
+            Log.d(TAG, "✅ Click listeners setup completed")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting up click listeners", e)
+            throw e
+        }
     }
 
     private fun updateUI() {
-        val cartItems = CartManager.getCartItems()
+        try {
+            val cartItems = CartManager.getCartItems()
 
-        Log.d(TAG, "🔄 Updating UI - Cart items: ${cartItems.size}")
+            Log.d(TAG, "🔄 Updating UI - Cart items: ${cartItems.size}")
 
-        if (cartItems.isEmpty()) {
-            showEmptyCart()
-        } else {
-            showCartContent(cartItems)
+            if (cartItems.isEmpty()) {
+                showEmptyCart()
+            } else {
+                showCartContent(cartItems)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating UI", e)
+            Toast.makeText(this, "Error updating cart", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -153,6 +179,7 @@ class CartActivity : AppCompatActivity(), CartManager.CartUpdateListener {
 
         emptyCartLayout.visibility = View.VISIBLE
         cartContentLayout.visibility = View.GONE
+        orderSummaryLayout.visibility = View.GONE
     }
 
     private fun showCartContent(cartItems: MutableList<CartItem>) {
@@ -160,21 +187,26 @@ class CartActivity : AppCompatActivity(), CartManager.CartUpdateListener {
 
         emptyCartLayout.visibility = View.GONE
         cartContentLayout.visibility = View.VISIBLE
+        orderSummaryLayout.visibility = View.VISIBLE
 
         cartAdapter.updateCartItems(cartItems)
         updateOrderSummary()
     }
 
     private fun updateOrderSummary() {
-        val subtotal = CartManager.getSubtotal()
-        val shipping = CartManager.getShipping()
-        val total = CartManager.getTotal()
+        try {
+            val subtotal = CartManager.getSubtotal()
+            val shipping = CartManager.getShipping()
+            val total = CartManager.getTotal()
 
-        subtotalValue.text = "$${String.format("%.2f", subtotal)}"
-        shippingValue.text = "$${String.format("%.2f", shipping)}"
-        totalValue.text = "$${String.format("%.2f", total)}"
+            subtotalValue.text = "$${String.format("%.2f", subtotal)}"
+            shippingValue.text = "$${String.format("%.2f", shipping)}"
+            totalValue.text = "$${String.format("%.2f", total)}"
 
-        Log.d(TAG, "💰 Order summary updated - Subtotal: $subtotal, Total: $total")
+            Log.d(TAG, "💰 Order summary updated - Subtotal: $subtotal, Total: $total")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating order summary", e)
+        }
     }
 
     private fun proceedToCheckout() {
