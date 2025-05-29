@@ -103,7 +103,7 @@ class DetailActivity : AppCompatActivity() {
                         displayBookDetail(book)
                     }
                 } else {
-                    Log.w(TAG, "⚠️ Book not found for ID: $bookId")
+                    Log.w(TAG, "⚠ Book not found for ID: $bookId")
                     runOnUiThread {
                         showError("Book not found")
                         finish()
@@ -131,7 +131,7 @@ class DetailActivity : AppCompatActivity() {
 
         // Set book category
         bookCategory.text = book.category
-        Log.d(TAG, "🏷️ Category set: ${book.category}")
+        Log.d(TAG, "🏷 Category set: ${book.category}")
 
         // Set book rating
         bookRating.text = "${book.rating}/5"
@@ -163,7 +163,7 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun loadBookCover(book: Book) {
-        Log.d(TAG, "🖼️ Loading book cover...")
+        Log.d(TAG, "🖼 Loading book cover...")
 
         if (!book.imageUrl.isNullOrEmpty()) {
             Log.d(TAG, "📸 Loading image from URL: ${book.imageUrl}")
@@ -272,5 +272,5 @@ class DetailActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "🔄 DetailActivity destroyed")
-    }
+        }
 }

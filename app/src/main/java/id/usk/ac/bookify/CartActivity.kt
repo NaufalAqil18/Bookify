@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import android.widget.ImageView
 
 class CartActivity : AppCompatActivity(), CartManager.CartUpdateListener {
 
@@ -41,6 +42,7 @@ class CartActivity : AppCompatActivity(), CartManager.CartUpdateListener {
         initViews()
         setupRecyclerView()
         setupClickListeners()
+        setupBottomNavigation()
 
         // Register for cart updates
         CartManager.addCartUpdateListener(this)
@@ -68,6 +70,30 @@ class CartActivity : AppCompatActivity(), CartManager.CartUpdateListener {
         btnCheckout = findViewById(R.id.btn_checkout)
 
         Log.d(TAG, "✅ Views initialized")
+    }
+
+    private fun setupBottomNavigation() {
+        try {
+            findViewById<LinearLayout>(R.id.nav_homepage).setOnClickListener {
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+            }
+
+            findViewById<LinearLayout>(R.id.nav_categories).setOnClickListener {
+                startActivity(Intent(this, CategoriesActivity::class.java))
+                finish()
+            }
+
+            // Cart is current activity, no need to handle
+
+            findViewById<LinearLayout>(R.id.nav_profile).setOnClickListener {
+                startActivity(Intent(this, ProfileActivity::class.java))
+                finish()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting up navigation", e)
+            Toast.makeText(this, "Error setting up navigation", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun setupRecyclerView() {
