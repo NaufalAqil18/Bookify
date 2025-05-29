@@ -7,7 +7,6 @@
     android:background="@drawable/login_background"
     tools:context=".SignUpActivity">
 
-    <!-- Tombol Kembali -->
     <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="48dp"
@@ -20,7 +19,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:tint="#FFFFFF" />
 
-    <!-- Judul -->
     <TextView
         android:id="@+id/tvRegisterTitle"
         android:layout_width="wrap_content"
@@ -34,7 +32,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btnBack" />
 
-    <!-- Konten Scrollable -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -51,7 +48,38 @@
             android:layout_height="wrap_content"
             android:paddingBottom="24dp">
 
-            <!-- Email -->
+            <EditText
+                android:id="@+id/etSUsername"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/edit_text_background"
+                android:hint="Username"
+                android:inputType="textPersonName"
+                android:padding="16dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#80FFFFFF"
+                android:textSize="14sp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <EditText
+                android:id="@+id/etSPhoneNumber"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/edit_text_background"
+                android:hint="Nomor Handphone"
+                android:inputType="phone"
+                android:padding="16dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#80FFFFFF"
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@+id/etSUsername"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
             <EditText
                 android:id="@+id/etSEmailAddress"
                 android:layout_width="0dp"
@@ -64,11 +92,10 @@
                 android:textColor="#FFFFFF"
                 android:textColorHint="#80FFFFFF"
                 android:textSize="14sp"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etSPhoneNumber"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <!-- Password -->
             <EditText
                 android:id="@+id/etSPassword"
                 android:layout_width="0dp"
@@ -85,7 +112,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <!-- Konfirmasi Password -->
             <EditText
                 android:id="@+id/etSConfPassword"
                 android:layout_width="0dp"
@@ -102,7 +128,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <!-- Tombol Sign Up -->
             <Button
                 android:id="@+id/btnSSigned"
                 android:layout_width="0dp"
@@ -115,7 +140,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <!-- Arahkan ke Login -->
             <TextView
                 android:id="@+id/tvRedirectLogin"
                 android:layout_width="0dp"

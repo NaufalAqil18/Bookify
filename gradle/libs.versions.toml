@@ -14,6 +14,7 @@ googleGmsGoogleServices = "4.4.2"
 firebaseAuth = "23.2.1"
 credentials = "1.5.0"
 credentialsPlayServicesAuth = "1.5.0"
+firebaseFirestoreKtx = "25.0.0"
 
 
 [libraries]
@@ -29,6 +30,7 @@ firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx",
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials" }
 androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

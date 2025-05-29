@@ -7,9 +7,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import id.usk.ac.bookify.R
+// Hapus R jika tidak digunakan secara eksplisit di sini, Android Studio akan mengurusnya
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore // Import Firestore
+import com.google.firebase.firestore.ktx.firestore // Import Firestore KTX
 import com.google.firebase.ktx.Firebase
 
 class SignUpActivity : AppCompatActivity() {
@@ -18,9 +20,13 @@ class SignUpActivity : AppCompatActivity() {
     private lateinit var etPass: EditText
     private lateinit var btnSignUp: Button
     lateinit var tvRedirectLogin: TextView
+    lateinit var etUsername: EditText // Tambahkan ini
+    lateinit var etPhoneNumber: EditText // Tambahkan ini
 
     // create Firebase authentication object
     private lateinit var auth: FirebaseAuth
+    // create Firebase Firestore object
+    private lateinit var db: FirebaseFirestore // Tambahkan ini
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +35,8 @@ class SignUpActivity : AppCompatActivity() {
         setContentView(R.layout.activity_sign_up)
 
         // View Bindings
+        etUsername = findViewById(R.id.etSUsername) // Tambahkan ini
+        etPhoneNumber = findViewById(R.id.etSPhoneNumber) // Tambahkan ini
         etEmail = findViewById(R.id.etSEmailAddress)
         etConfPass = findViewById(R.id.etSConfPassword)
         etPass = findViewById(R.id.etSPassword)
@@ -37,6 +45,8 @@ class SignUpActivity : AppCompatActivity() {
 
         // Initialising auth object
         auth = Firebase.auth
+        // Initialising Firestore object
+        db = Firebase.firestore // Tambahkan ini
 
         btnSignUp.setOnClickListener {
             signUpUser()
@@ -46,23 +56,31 @@ class SignUpActivity : AppCompatActivity() {
         tvRedirectLogin.setOnClickListener {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
+            finish() // Tambahkan finish agar activity ini ditutup
         }
 
+        // Handle back button click (jika ic_back ada)
+        val btnBack: android.widget.ImageButton? = findViewById(R.id.btnBack)
+        btnBack?.setOnClickListener {
+            finish() // Kembali ke activity sebelumnya
+        }
     }
 
     private fun signUpUser() {
+        val username = etUsername.text.toString() // Tambahkan ini
+        val phoneNumber = etPhoneNumber.text.toString() // Tambahkan ini
         val email = etEmail.text.toString()
         val pass = etPass.text.toString()
         val confirmPassword = etConfPass.text.toString()
 
-        // check pass
-        if (email.isBlank() || pass.isBlank() || confirmPassword.isBlank()) {
-            Toast.makeText(this, "Email and Password can't be blank", Toast.LENGTH_SHORT).show()
+        // check fields
+        if (username.isBlank() || phoneNumber.isBlank() || email.isBlank() || pass.isBlank() || confirmPassword.isBlank()) {
+            Toast.makeText(this, "Semua field harus diisi", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (pass != confirmPassword) {
-            Toast.makeText(this, "Password and Confirm Password do not match", Toast.LENGTH_SHORT)
+            Toast.makeText(this, "Password dan Konfirmasi Password tidak cocok", Toast.LENGTH_SHORT)
                 .show()
             return
         }
@@ -70,13 +88,44 @@ class SignUpActivity : AppCompatActivity() {
         // We call createUserWithEmailAndPassword
         // using auth object and pass the
         // email and pass in it.
-        auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(this) {
-            if (it.isSuccessful) {
-                Toast.makeText(this, "Successfully Singed Up", Toast.LENGTH_SHORT).show()
-                finish()
+        auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(this) { task ->
+            if (task.isSuccessful) {
+                Toast.makeText(this, "Berhasil Daftar", Toast.LENGTH_SHORT).show()
+                // Dapatkan UID pengguna yang baru dibuat
+                val firebaseUser = auth.currentUser
+                firebaseUser?.let {
+                    val userId = it.uid
+                    // Simpan informasi tambahan ke Firestore
+                    saveAdditionalUserInfo(userId, username, email, phoneNumber)
+                }
             } else {
-                Toast.makeText(this, "Singed Up Failed!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Pendaftaran Gagal! ${task.exception?.message}", Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun saveAdditionalUserInfo(userId: String, username: String, email: String, phoneNumber: String) {
+        val user = hashMapOf(
+            "username" to username,
+            "email" to email,
+            "phoneNumber" to phoneNumber
+            // Anda bisa menambahkan field lain di sini jika perlu
+        )
+
+        // Tambahkan dokumen baru dengan UID pengguna sebagai ID dokumen di koleksi "users"
+        db.collection("users").document(userId)
+            .set(user)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Info pengguna disimpan", Toast.LENGTH_SHORT).show()
+                // Arahkan ke Login Activity atau Main Activity setelah berhasil
+                val intent = Intent(this, LoginActivity::class.java)
+                startActivity(intent)
+                finish() // Selesaikan SignUpActivity
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Gagal menyimpan info pengguna: ${e.message}", Toast.LENGTH_LONG).show()
+                // Anda mungkin ingin menangani kasus ini, misalnya menghapus user yang baru dibuat dari Auth
+                // atau mencoba menyimpan lagi. Untuk saat ini, kita hanya tampilkan pesan.
+            }
     }
 }
