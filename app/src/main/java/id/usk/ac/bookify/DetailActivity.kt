@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -25,6 +26,7 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var bookDescription: TextView
     private lateinit var addToCartButton: Button
     private lateinit var cartButton: ImageView
+    private lateinit var btnBack: ImageButton
 
     private var currentBook: Book? = null
 
@@ -39,6 +41,7 @@ class DetailActivity : AppCompatActivity() {
 
         initViews()
         setupRepository()
+        setupBackButton()
 
         val bookId = intent.getStringExtra(EXTRA_BOOK_ID)
         if (bookId != null) {
@@ -63,6 +66,7 @@ class DetailActivity : AppCompatActivity() {
         bookPrice = findViewById(R.id.book_price_value)
         bookDescription = findViewById(R.id.book_description)
         addToCartButton = findViewById(R.id.btn_add_to_cart)
+        btnBack = findViewById(R.id.btnBack)
 
         // Initialize cart button if it exists in the layout
         try {
@@ -85,6 +89,13 @@ class DetailActivity : AppCompatActivity() {
             Log.d(TAG, "🛒 Cart button clicked")
             val intent = Intent(this, CartActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    private fun setupBackButton() {
+        btnBack.setOnClickListener {
+            Log.d(TAG, "🔙 Back button clicked")
+            finish() // Kembali ke activity sebelumnya
         }
     }
 
@@ -272,5 +283,5 @@ class DetailActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "🔄 DetailActivity destroyed")
-        }
+    }
 }

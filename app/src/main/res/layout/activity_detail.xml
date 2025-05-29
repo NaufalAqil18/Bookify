@@ -7,23 +7,36 @@
     android:background="@drawable/login_background">
 
     <!-- Header dengan judul Detail -->
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:layout_marginHorizontal="-16dp"
         android:background="@drawable/header_gradient"
-        android:elevation="4dp"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:elevation="4dp">
 
+        <!-- Back Button -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back to previous screen"
+            android:src="@drawable/ic_back"
+            app:tint="#FFFFFF" />
+
+        <!-- Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:text="Detail"
             android:textColor="#FFFFFF"
             android:textSize="24sp"
             android:textStyle="bold" />
-    </LinearLayout>
+
+    </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -63,10 +76,12 @@
                     android:layout_height="200dp"
                     android:layout_marginEnd="20dp"
                     android:scaleType="centerCrop"
+                    android:contentDescription="Book cover image"
                     android:src="@drawable/picture3" />
 
                 <!-- Book Details -->
                 <LinearLayout
+                    android:id="@+id/book_info_container"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
