@@ -20,6 +20,9 @@
             android:name=".MainActivity"
             android:exported="true" />
         <activity
+            android:name=".DetailActivity"
+            android:exported="true" />
+        <activity
             android:name=".SignUpActivity"
             android:exported="true" /> <!-- Ini jadi activity pertama saat app dibuka -->
         <activity

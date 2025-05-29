@@ -24,8 +24,10 @@ class BookRepository {
                 Log.d("BookRepository", "🔍 Processing best deal: ${childSnapshot.key}")
                 val book = childSnapshot.getValue(Book::class.java)
                 if (book != null) {
-                    Log.d("BookRepository", "✅ Best deal found: ${book.title}")
-                    books.add(book)
+                    // Set bookId from Firebase key if not already set
+                    val bookWithId = book.copy(bookId = childSnapshot.key ?: book.bookId)
+                    Log.d("BookRepository", "✅ Best deal found: ${bookWithId.title} (ID: ${bookWithId.bookId})")
+                    books.add(bookWithId)
                 }
             }
 
@@ -50,8 +52,10 @@ class BookRepository {
             for (childSnapshot in snapshot.children) {
                 val book = childSnapshot.getValue(Book::class.java)
                 book?.let {
-                    Log.d("BookRepository", "✅ Top book found: ${it.title}")
-                    books.add(it)
+                    // Set bookId from Firebase key if not already set
+                    val bookWithId = it.copy(bookId = childSnapshot.key ?: it.bookId)
+                    Log.d("BookRepository", "✅ Top book found: ${bookWithId.title} (ID: ${bookWithId.bookId})")
+                    books.add(bookWithId)
                 }
             }
 
@@ -75,8 +79,10 @@ class BookRepository {
             for (childSnapshot in snapshot.children) {
                 val book = childSnapshot.getValue(Book::class.java)
                 book?.let {
-                    Log.d("BookRepository", "✅ Latest book found: ${it.title}")
-                    books.add(it)
+                    // Set bookId from Firebase key if not already set
+                    val bookWithId = it.copy(bookId = childSnapshot.key ?: it.bookId)
+                    Log.d("BookRepository", "✅ Latest book found: ${bookWithId.title} (ID: ${bookWithId.bookId})")
+                    books.add(bookWithId)
                 }
             }
 
@@ -84,6 +90,34 @@ class BookRepository {
         } catch (e: Exception) {
             Log.e("BookRepository", "❌ Error fetching latest books", e)
             emptyList()
+        }
+    }
+
+    // New method to get book by ID
+    suspend fun getBookById(bookId: String): Book? {
+        return try {
+            Log.d("BookRepository", "🔍 Fetching book by ID: $bookId")
+
+            val snapshot = booksRef.child(bookId).get().await()
+
+            if (snapshot.exists()) {
+                val book = snapshot.getValue(Book::class.java)
+                if (book != null) {
+                    // Ensure bookId is set
+                    val bookWithId = book.copy(bookId = bookId)
+                    Log.d("BookRepository", "✅ Book found: ${bookWithId.title}")
+                    return bookWithId
+                } else {
+                    Log.w("BookRepository", "⚠️ Failed to parse book data for ID: $bookId")
+                }
+            } else {
+                Log.w("BookRepository", "⚠️ No book found with ID: $bookId")
+            }
+
+            null
+        } catch (e: Exception) {
+            Log.e("BookRepository", "❌ Error fetching book by ID: $bookId", e)
+            null
         }
     }
 }

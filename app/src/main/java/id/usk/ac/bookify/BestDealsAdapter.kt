@@ -1,5 +1,7 @@
 package id.usk.ac.bookify
 
+import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
 class BestDealsAdapter(private var books: List<Book>) : RecyclerView.Adapter<BestDealsAdapter.ViewHolder>() {
+
+    companion object {
+        private const val TAG = "BestDealsAdapter"
+    }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val bookImage: ImageView = view.findViewById(R.id.bookImage)
@@ -28,9 +34,28 @@ class BestDealsAdapter(private var books: List<Book>) : RecyclerView.Adapter<Bes
         holder.bookTitle.text = book.title
         holder.bookAuthor.text = book.author
 
+        // Load image with Glide
         Glide.with(holder.itemView.context)
             .load(book.imageUrl)
+            .placeholder(R.drawable.picture3)
+            .error(R.drawable.picture3)
             .into(holder.bookImage)
+
+        // Set click listener to open DetailActivity
+        holder.itemView.setOnClickListener {
+            Log.d(TAG, "📖 Best deal item clicked: ${book.title} (ID: ${book.bookId})")
+
+            if (book.bookId.isNotEmpty()) {
+                val context = holder.itemView.context
+                val intent = Intent(context, DetailActivity::class.java).apply {
+                    putExtra(DetailActivity.EXTRA_BOOK_ID, book.bookId)
+                }
+                context.startActivity(intent)
+                Log.d(TAG, "✅ Opening DetailActivity for book: ${book.title}")
+            } else {
+                Log.e(TAG, "❌ Book ID is empty for: ${book.title}")
+            }
+        }
     }
 
     override fun getItemCount() = books.size
@@ -38,5 +63,6 @@ class BestDealsAdapter(private var books: List<Book>) : RecyclerView.Adapter<Bes
     fun updateBooks(newBooks: List<Book>) {
         books = newBooks
         notifyDataSetChanged()
+        Log.d(TAG, "📊 Best deals adapter updated with ${newBooks.size} items")
     }
 }
