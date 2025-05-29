@@ -3,11 +3,15 @@ package id.usk.ac.bookify
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class CheckoutActivity : AppCompatActivity() {
 
@@ -16,9 +20,19 @@ class CheckoutActivity : AppCompatActivity() {
     private lateinit var addNewAddressButton: Button
     private lateinit var payOptionLayout: LinearLayout
     private lateinit var payButton: Button
+    private lateinit var selectedPaymentMethodText: TextView
 
     private var deliveryAddress = "No.23, James Street, New\nTown, North Province"
-    private var selectedPaymentMethod = "Credit Card"
+    private var selectedPaymentMethod: PaymentMethod? = null
+
+    private val paymentMethods = listOf(
+        PaymentMethod("mandiri", "Mandiri", R.drawable.ic_mandiri),
+        PaymentMethod("bca", "BCA", R.drawable.ic_bca),
+        PaymentMethod("bni", "BNI", R.drawable.ic_bni),
+        PaymentMethod("gopay", "Gopay", R.drawable.ic_gopay),
+        PaymentMethod("dana", "Dana", R.drawable.ic_dana),
+        PaymentMethod("ovo", "OVO", R.drawable.ic_ovo)
+    )
 
     companion object {
         const val TAG = "CheckoutActivity"
@@ -55,6 +69,7 @@ class CheckoutActivity : AppCompatActivity() {
             addNewAddressButton = findViewById(R.id.btn_add_new_address)
             payOptionLayout = findViewById(R.id.pay_option_layout)
             payButton = findViewById(R.id.btn_pay)
+            selectedPaymentMethodText = findViewById(R.id.selected_payment_method)
 
             // Set initial address
             addressText.text = deliveryAddress
@@ -85,6 +100,10 @@ class CheckoutActivity : AppCompatActivity() {
 
             payButton.setOnClickListener {
                 Log.d(TAG, "💰 Pay button clicked")
+                if (selectedPaymentMethod == null) {
+                    Toast.makeText(this, "Please select a payment method", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
                 processPayment()
             }
 
@@ -93,6 +112,25 @@ class CheckoutActivity : AppCompatActivity() {
             Log.e(TAG, "Error setting up click listeners", e)
             throw e
         }
+    }
+
+    private fun showPaymentOptions() {
+        val bottomSheet = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.bottom_sheet_payment_methods, null)
+        bottomSheet.setContentView(view)
+
+        val recyclerView = view.findViewById<RecyclerView>(R.id.payment_methods_recycler)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        
+        val adapter = PaymentMethodAdapter(paymentMethods) { paymentMethod ->
+            selectedPaymentMethod = paymentMethod
+            selectedPaymentMethodText.text = paymentMethod.name
+            bottomSheet.dismiss()
+            Log.d(TAG, "Selected payment method: ${paymentMethod.name}")
+        }
+        
+        recyclerView.adapter = adapter
+        bottomSheet.show()
     }
 
     private fun updateOrderSummary() {
@@ -116,11 +154,6 @@ class CheckoutActivity : AppCompatActivity() {
         Log.d(TAG, "💡 Add new address not implemented yet")
     }
 
-    private fun showPaymentOptions() {
-        Toast.makeText(this, "Payment method selection coming soon!", Toast.LENGTH_SHORT).show()
-        Log.d(TAG, "💡 Payment method selection not implemented yet")
-    }
-
     private fun processPayment() {
         try {
             val cartItems = CartManager.getCartItems()
@@ -135,7 +168,7 @@ class CheckoutActivity : AppCompatActivity() {
 
             Log.d(TAG, "💳 Processing payment - Items: $itemCount, Total: $total")
             Log.d(TAG, "📍 Delivery Address: $deliveryAddress")
-            Log.d(TAG, "💳 Payment Method: $selectedPaymentMethod")
+            Log.d(TAG, "💳 Payment Method: ${selectedPaymentMethod?.name}")
 
             // Simulate payment processing
             simulatePaymentProcess(total, itemCount)

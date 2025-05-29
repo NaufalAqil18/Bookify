@@ -123,10 +123,11 @@
                     android:focusable="true">
 
                     <TextView
+                        android:id="@+id/selected_payment_method"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Pay Option"
+                        android:text="Select Payment Method"
                         android:textColor="@android:color/white"
                         android:textSize="16sp" />
 
