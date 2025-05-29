@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/login_background">
@@ -27,102 +28,118 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cart"
+                android:text="Checkout"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Content Section -->
-        <LinearLayout
+        <!-- Scrollable Content -->
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:layout_weight="1">
 
-            <!-- Delivering Address Section -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Delivering Address"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:layout_marginBottom="16dp" />
-
-            <!-- Address Card -->
+            <!-- Content Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/book_item_background"
-                android:padding="20dp"
-                android:layout_marginBottom="20dp">
+                android:orientation="vertical"
+                android:padding="20dp">
 
+                <!-- Delivering Address Section -->
                 <TextView
-                    android:id="@+id/address_text"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Delivering Address"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- Address Card -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@drawable/book_item_background"
+                    android:padding="16dp"
+                    android:layout_marginBottom="20dp">
+
+                    <TextView
+                        android:id="@+id/address_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:lineSpacingExtra="4dp"
+                        android:text="No.23, James Street, New\nTown, North Province"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp" />
+
+                    <FrameLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="48dp"
+                        android:minHeight="48dp">
+
+                        <TextView
+                            android:id="@+id/btn_change_address"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="?android:attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:padding="12dp"
+                            android:text="Change"
+                            android:textColor="@android:color/white"
+                            android:textSize="16sp" />
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <!-- Add New Delivery Address Button -->
+                <Button
+                    android:id="@+id/btn_add_new_address"
+                    android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:lineSpacingExtra="4dp"
-                    android:text="No.23, James Street, New\nTown, North Province"
+                    android:text="Add a New Delivery Address"
                     android:textColor="@android:color/white"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:background="@drawable/outlined_button_background"
+                    android:layout_marginBottom="20dp"
+                    style="?android:attr/borderlessButtonStyle" />
 
-                <TextView
-                    android:id="@+id/btn_change_address"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="8dp"
-                    android:text="Change"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-
-            </LinearLayout>
-
-            <!-- Add New Delivery Address Button -->
-            <Button
-                android:id="@+id/btn_add_new_address"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="Add a New Delivery Address"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
-                android:background="@drawable/outlined_button_background"
-                android:layout_marginBottom="20dp"
-                style="?android:attr/borderlessButtonStyle" />
-
-            <!-- Pay Option -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/outlined_button_background"
-                android:padding="20dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <TextView
+                <!-- Pay Option -->
+                <LinearLayout
                     android:id="@+id/pay_option_layout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Pay Option"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp" />
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:orientation="horizontal"
+                    android:background="@drawable/outlined_button_background"
+                    android:padding="16dp"
+                    android:gravity="center_vertical"
+                    android:clickable="true"
+                    android:focusable="true">
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_dropdown_arrow"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Pay Option"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_dropdown_arrow"
+                        android:contentDescription="Select payment option"/>
+
+                </LinearLayout>
 
             </LinearLayout>
-
-        </LinearLayout>
+        </ScrollView>
 
         <!-- Pay Button -->
         <Button
