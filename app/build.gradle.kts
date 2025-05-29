@@ -57,4 +57,5 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
 }
