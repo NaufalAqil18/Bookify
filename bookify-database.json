@@ -1,0 +1,224 @@
+{
+  "Categories": {
+    "Category1": {
+      "categoryId": "classics",
+      "description": "Classic literature books",
+      "name": "CLASSICS"
+    },
+    "Category2": {
+      "categoryId": "non-fiction",
+      "description": "Non-fiction and educational books",
+      "name": "NON_FICTION"
+    },
+    "Category3": {
+      "categoryId": "fantasy",
+      "description": "Fantasy and magical books",
+      "name": "FANTASY"
+    },
+    "Category4": {
+      "categoryId": "young-adult",
+      "description": "Young adult literature",
+      "name": "YOUNG_ADULT"
+    },
+    "Category5": {
+      "categoryId": "crime",
+      "description": "Crime and mystery books",
+      "name": "CRIME"
+    },
+    "Category6": {
+      "categoryId": "horror",
+      "description": "Horror and thriller books",
+      "name": "HORROR"
+    },
+    "Category7": {
+      "categoryId": "sci-fi",
+      "description": "Science fiction books",
+      "name": "SCI_FI"
+    },
+    "Category8": {
+      "categoryId": "drama",
+      "description": "Drama and literary fiction",
+      "name": "DRAMA"
+    }
+  },
+  "User": "",
+  "books": {
+    "book-001": {
+      "author": "Oscar Wilde",
+      "bookId": "book-001",
+      "category": "CLASSICS",
+      "description": "Oscar Wilde's only novel is the dreamlike story of a young man who sells his soul for eternal youth and beauty...",
+      "imageUrl": "https://i.im.ge/2025/05/29/vnjPox.picture1.png",
+      "isBestDeal": true,
+      "isLatestBook": false,
+      "isTopBook": true,
+      "price": 25,
+      "publishedDate": "2024-01-15",
+      "rating": 4.1,
+      "stock": 50,
+      "title": "The Picture of Dorian Gray"
+    },
+    "book-002": {
+      "author": "J.D. Salinger",
+      "bookId": "book-002",
+      "category": "CLASSICS",
+      "description": "A classic coming-of-age novel that explores the challenges of teenage angst and alienation.",
+      "imageUrl": "https://i.im.ge/2025/05/29/vnj6WG.picture2.png",
+      "isBestDeal": false,
+      "isLatestBook": false,
+      "isTopBook": true,
+      "price": 30,
+      "publishedDate": "2023-11-20",
+      "rating": 4.3,
+      "stock": 40,
+      "title": "The Catcher in the Rye"
+    },
+    "book-003": {
+      "author": "Maureen Johnson",
+      "bookId": "book-003",
+      "category": "YOUNG_ADULT",
+      "description": "A thrilling mystery featuring lies, friendship, and dark secrets buried in the past.",
+      "imageUrl": "https://i.im.ge/2025/05/29/vnjmOc.picture3.png",
+      "isBestDeal": true,
+      "isLatestBook": true,
+      "isTopBook": false,
+      "price": 16,
+      "publishedDate": "2024-03-10",
+      "rating": 4,
+      "stock": 35,
+      "title": "Nine Liars"
+    },
+    "book-004": {
+      "author": "Caroline Peckham, Susanne Valenti",
+      "bookId": "book-004",
+      "category": "FANTASY",
+      "description": "A fantasy epic full of romance, betrayal, and powerful magic that binds destinies.",
+      "imageUrl": "https://i.im.ge/2025/05/29/vnj9HT.picture4.png",
+      "isBestDeal": false,
+      "isLatestBook": false,
+      "isTopBook": true,
+      "price": 30,
+      "publishedDate": "2023-09-01",
+      "rating": 4.6,
+      "stock": 45,
+      "title": "Sorrow and Starlight"
+    },
+    "book-005": {
+      "author": "Scarlett St. Clair",
+      "bookId": "book-005",
+      "category": "FANTASY",
+      "description": "The tale of a powerful queen battling inner demons and external foes in a mythical realm.",
+      "imageUrl": "https://i.im.ge/2025/05/29/vnj5y0.picture5.png",
+      "isBestDeal": true,
+      "isLatestBook": true,
+      "isTopBook": false,
+      "price": 24,
+      "publishedDate": "2024-04-02",
+      "rating": 4.4,
+      "stock": 60,
+      "title": "Queen of Myth and Monsters"
+    },
+    "book-006": {
+      "author": "Buddy Levy",
+      "bookId": "book-006",
+      "category": "DRAMA",
+      "description": "A harrowing historical account of Arctic exploration and survival against all odds.",
+      "imageUrl": "https://i.im.ge/2025/05/29/vnjtha.picture6.png",
+      "isBestDeal": false,
+      "isLatestBook": false,
+      "isTopBook": true,
+      "price": 30,
+      "publishedDate": "2023-12-05",
+      "rating": 4.5,
+      "stock": 38,
+      "title": "Empire of Ice and Stone: The Disastrous Voyage of the Karluk"
+    },
+    "book-007": {
+      "author": "Liora Kent",
+      "bookId": "book-007",
+      "category": "FANTASY",
+      "description": "A young mage must choose between duty and destiny as darkness creeps across the land.",
+      "imageUrl": "https://i.im.ge/2025/05/29/vnjyYJ.picture7.png",
+      "isBestDeal": false,
+      "isLatestBook": true,
+      "isTopBook": false,
+      "price": 22,
+      "publishedDate": "2025-01-10",
+      "rating": 4.2,
+      "stock": 42,
+      "title": "Shadows of Aether"
+    },
+    "book-008": {
+      "author": "Henrik Cole",
+      "bookId": "book-008",
+      "category": "SCI_FI",
+      "description": "In a distant future, one man's memory holds the key to humanity's forgotten history.",
+      "imageUrl": "https://i.im.ge/2025/05/29/vnjABy.picture8.png",
+      "isBestDeal": true,
+      "isLatestBook": true,
+      "isTopBook": false,
+      "price": 19,
+      "publishedDate": "2025-02-18",
+      "rating": 4,
+      "stock": 30,
+      "title": "The Last Archivist"
+    },
+    "book-009": {
+      "author": "Ava Morrigan",
+      "bookId": "book-009",
+      "category": "NON_FICTION",
+      "description": "A touching love story set in a hidden forest village where secrets bloom like flowers.",
+      "imageUrl": "https://i.im.ge/2025/05/29/vnjABy.picture8.png",
+      "isBestDeal": false,
+      "isLatestBook": false,
+      "isTopBook": true,
+      "price": 20,
+      "publishedDate": "2024-07-25",
+      "rating": 4.3,
+      "stock": 47,
+      "title": "Beneath the Silver Leaves"
+    }
+  },
+  "purchases": {
+    "8Fbj1JvMOZfMI38JTZCTAsr1DlJ3": {
+      "-ORUJWSsdqnZ6Q7QMje3": {
+        "books": [
+          {
+            "bookId": "book-002",
+            "pricePerItem": 30,
+            "quantity": 1,
+            "title": "The Catcher in the Rye"
+          }
+        ],
+        "phoneNumber": "081361521263",
+        "purchaseDate": 1748577159503,
+        "purchaseId": "-ORUJWSsdqnZ6Q7QMje3",
+        "totalAmount": 30,
+        "userId": "8Fbj1JvMOZfMI38JTZCTAsr1DlJ3",
+        "username": "nashed"
+      },
+      "-ORUKT5CWeDwwJiUzTi6": {
+        "books": [
+          {
+            "bookId": "book-004",
+            "pricePerItem": 30,
+            "quantity": 2,
+            "title": "Sorrow and Starlight"
+          },
+          {
+            "bookId": "book-006",
+            "pricePerItem": 30,
+            "quantity": 2,
+            "title": "Empire of Ice and Stone: The Disastrous Voyage of the Karluk"
+          }
+        ],
+        "phoneNumber": "081361521263",
+        "purchaseDate": 1748577407838,
+        "purchaseId": "-ORUKT5CWeDwwJiUzTi6",
+        "totalAmount": 120,
+        "userId": "8Fbj1JvMOZfMI38JTZCTAsr1DlJ3",
+        "username": "nashed"
+      }
+    }
+  }
+}
