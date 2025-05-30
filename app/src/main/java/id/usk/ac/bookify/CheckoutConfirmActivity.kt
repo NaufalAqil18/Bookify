@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 
 class CheckoutConfirmActivity : AppCompatActivity() {
 
@@ -13,7 +14,7 @@ class CheckoutConfirmActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "CheckoutConfirmActivity"
-        private const val AUTO_CLOSE_DELAY = 5000L // 5 seconds
+        private const val AUTO_CLOSE_DELAY = 5000L // 5 detik
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,16 +22,13 @@ class CheckoutConfirmActivity : AppCompatActivity() {
         
         try {
             setContentView(R.layout.activity_checkout_confirm)
-            Log.d(TAG, "🎉 CheckoutConfirmActivity created")
+            Log.d(TAG, "🎉 CheckoutConfirmActivity dibuat")
 
             initViews()
             setupClickListeners()
             scheduleAutoClose()
-
-            // Finish the checkout activity
-            finishCheckoutActivity()
         } catch (e: Exception) {
-            Log.e(TAG, "Error initializing CheckoutConfirmActivity", e)
+            Log.e(TAG, "Error saat inisialisasi CheckoutConfirmActivity", e)
             navigateToHome()
         }
     }
@@ -38,9 +36,9 @@ class CheckoutConfirmActivity : AppCompatActivity() {
     private fun initViews() {
         try {
             closeButton = findViewById(R.id.btn_close)
-            Log.d(TAG, "✅ Views initialized")
+            Log.d(TAG, "✅ Views diinisialisasi")
         } catch (e: Exception) {
-            Log.e(TAG, "Error initializing views", e)
+            Log.e(TAG, "Error saat inisialisasi views", e)
             throw e
         }
     }
@@ -48,19 +46,19 @@ class CheckoutConfirmActivity : AppCompatActivity() {
     private fun setupClickListeners() {
         try {
             closeButton.setOnClickListener {
-                Log.d(TAG, "❌ Close button clicked")
+                Log.d(TAG, "❌ Tombol tutup diklik")
                 navigateToHome()
             }
 
-            // Allow clicking anywhere on screen to close
-            findViewById<androidx.constraintlayout.widget.ConstraintLayout>(android.R.id.content).setOnClickListener {
-                Log.d(TAG, "📱 Screen tapped - closing confirmation")
+            // Memungkinkan klik di mana saja untuk menutup
+            findViewById<ConstraintLayout>(R.id.root_layout).setOnClickListener {
+                Log.d(TAG, "📱 Layar diketuk - menutup konfirmasi")
                 navigateToHome()
             }
 
-            Log.d(TAG, "✅ Click listeners setup completed")
+            Log.d(TAG, "✅ Click listeners berhasil diatur")
         } catch (e: Exception) {
-            Log.e(TAG, "Error setting up click listeners", e)
+            Log.e(TAG, "Error saat mengatur click listeners", e)
             navigateToHome()
         }
     }
@@ -72,39 +70,27 @@ class CheckoutConfirmActivity : AppCompatActivity() {
             autoCloseScheduled = true
             closeButton.postDelayed({
                 if (!isFinishing && !isDestroyed) {
-                    Log.d(TAG, "⏰ Auto closing confirmation screen")
+                    Log.d(TAG, "⏰ Otomatis menutup layar konfirmasi")
                     navigateToHome()
                 }
             }, AUTO_CLOSE_DELAY)
         } catch (e: Exception) {
-            Log.e(TAG, "Error scheduling auto close", e)
-        }
-    }
-
-    private fun finishCheckoutActivity() {
-        try {
-            // Find and finish the checkout activity
-            for (activity in (application as? android.app.Application)?.activities() ?: emptyList()) {
-                if (activity is CheckoutActivity) {
-                    activity.finish()
-                    break
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error finishing checkout activity", e)
+            Log.e(TAG, "Error saat mengatur auto close", e)
         }
     }
 
     private fun navigateToHome() {
         try {
-            Log.d(TAG, "🏠 Navigating back to home")
+            Log.d(TAG, "🏠 Kembali ke halaman utama")
 
             val intent = Intent(this, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or 
+                          Intent.FLAG_ACTIVITY_CLEAR_TOP or 
+                          Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
             finish()
         } catch (e: Exception) {
-            Log.e(TAG, "Error navigating to home", e)
+            Log.e(TAG, "Error saat navigasi ke home", e)
             finish()
         }
     }
@@ -120,7 +106,7 @@ class CheckoutConfirmActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "🔄 CheckoutConfirmActivity destroyed")
+        Log.d(TAG, "🔄 CheckoutConfirmActivity dihancurkan")
     }
 }
 
