@@ -1,10 +1,13 @@
 package id.usk.ac.bookify
 
+import android.app.Dialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.view.Window
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -123,10 +126,37 @@ class ProfileActivity : AppCompatActivity() {
 
         // Logout button
         findViewById<CardView>(R.id.logoutButton).setOnClickListener {
-            auth.signOut()
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+            showLogoutDialog()
         }
+    }
+
+    private fun showLogoutDialog() {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_logout)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        // Set dialog width to match parent with margins
+        val width = (resources.displayMetrics.widthPixels * 0.9).toInt()
+        dialog.window?.setLayout(width, LinearLayout.LayoutParams.WRAP_CONTENT)
+
+        val btnCancel = dialog.findViewById<Button>(R.id.btnCancel)
+        val btnConfirm = dialog.findViewById<Button>(R.id.btnConfirm)
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnConfirm.setOnClickListener {
+            auth.signOut()
+            startActivity(Intent(this, LoginActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            })
+            finish()
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     private fun setupBottomNavigation() {
