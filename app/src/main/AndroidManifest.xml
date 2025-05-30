@@ -27,7 +27,10 @@
 
         <activity
             android:name=".CategoriesActivity"
-            android:exported="true" />
+            android:exported="false" />
+        <activity
+            android:name=".CategoryDetailsActivity"
+            android:exported="false" />
         <activity
             android:name=".CartActivity"
             android:exported="true" />

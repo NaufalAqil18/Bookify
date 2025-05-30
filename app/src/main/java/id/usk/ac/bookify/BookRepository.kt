@@ -120,4 +120,33 @@ class BookRepository {
             null
         }
     }
+
+    suspend fun getBooksByCategory(categoryId: String): List<Book> {
+        return try {
+            Log.d("BookRepository", "🔍 Querying books for category: $categoryId")
+            // Convert categoryId to uppercase format used in database
+            val dbCategory = categoryId.uppercase().replace("-", "_")
+            val snapshot = booksRef.orderByChild("category").equalTo(dbCategory).get().await()
+
+            Log.d("BookRepository", "📊 Category books snapshot exists: ${snapshot.exists()}")
+            Log.d("BookRepository", "📚 Category books count: ${snapshot.childrenCount}")
+
+            val books = mutableListOf<Book>()
+
+            for (childSnapshot in snapshot.children) {
+                val book = childSnapshot.getValue(Book::class.java)
+                book?.let {
+                    // Set bookId from Firebase key if not already set
+                    val bookWithId = it.copy(bookId = childSnapshot.key ?: it.bookId)
+                    Log.d("BookRepository", "✅ Book found: ${bookWithId.title} (ID: ${bookWithId.bookId})")
+                    books.add(bookWithId)
+                }
+            }
+
+            books
+        } catch (e: Exception) {
+            Log.e("BookRepository", "❌ Error fetching books for category: $categoryId", e)
+            emptyList()
+        }
+    }
 }
