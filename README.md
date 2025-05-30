@@ -45,7 +45,7 @@ Before you begin, ensure you have:
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/yourusername/Bookify.git
+   git clone https://github.com/NaufalAqil18/Bookify.git
    cd Bookify
    ```
 
@@ -53,8 +53,8 @@ Before you begin, ensure you have:
    - Create a new Firebase project at [Firebase Console](https://console.firebase.google.com/)
    - Add an Android app in your Firebase project:
      - Package name: `id.usk.ac.bookify`
-     - Download `google-services.json`
-     - Place `google-services.json` in the app/ directory
+     - Download `Bookify-database.json`
+     - Place `Bookify-database.json` in the app/ directory
 
 3. **Firebase Database Rules**
    Copy these rules to your Firebase Realtime Database:
@@ -122,4 +122,33 @@ Before you begin, ensure you have:
    - Click the 'Run' button in Android Studio, or
    - Use the keyboard shortcut (⇧F10 on Windows/Linux, ^R on macOS)
 
-## 📊 Database Structure
+## 🔐 Security
+
+- Implement proper authentication before accessing protected routes
+- Use Firebase Security Rules for data protection
+- Never expose API keys or sensitive information in the code
+- Validate all user inputs
+- Implement proper error handling
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## 👥 Authors
+
+- Naufal Aqil - *Initial work* - [NaufalAqil18](https://github.com/NaufalAqil18)
+- Nashed Bayazid Ali - *Initial work* - [nashedalii](https://github.com/nashedalii)
+
+## 🙏 Acknowledgments
+
+- Firebase Documentation
+- Android Developer Documentation
+- Material Design Guidelines
