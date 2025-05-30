@@ -1,6 +1,9 @@
 package id.usk.ac.bookify
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -8,8 +11,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -17,6 +23,18 @@ import java.util.Locale
 class ProfileActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+    private lateinit var usernameText: TextView
+    private lateinit var joinedText: TextView
+    private lateinit var profileImage: CircleImageView
+    private lateinit var localBroadcastManager: LocalBroadcastManager
+
+    private val profileUpdateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == "PROFILE_UPDATED") {
+                loadUserData()
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,17 +42,44 @@ class ProfileActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
+        localBroadcastManager = LocalBroadcastManager.getInstance(this)
+
+        // Initialize views
+        usernameText = findViewById(R.id.usernameText)
+        joinedText = findViewById(R.id.joinedText)
+        profileImage = findViewById(R.id.profileImage)
 
         setupUI()
         setupBottomNavigation()
+
+        // Register broadcast receiver
+        localBroadcastManager.registerReceiver(
+            profileUpdateReceiver,
+            IntentFilter("PROFILE_UPDATED")
+        )
     }
 
-    private fun setupUI() {
+    override fun onDestroy() {
+        super.onDestroy()
+        // Unregister broadcast receiver
+        localBroadcastManager.unregisterReceiver(profileUpdateReceiver)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        loadUserData()
+    }
+
+    private fun loadUserData() {
         val currentUser = auth.currentUser
-        val usernameText = findViewById<TextView>(R.id.usernameText)
-        val joinedText = findViewById<TextView>(R.id.joinedText)
-        
         currentUser?.let { user ->
+            // Load profile image
+            user.photoUrl?.let { uri ->
+                Glide.with(this)
+                    .load(uri)
+                    .into(profileImage)
+            }
+
             db.collection("users")
                 .document(user.uid)
                 .get()
@@ -62,7 +107,9 @@ class ProfileActivity : AppCompatActivity() {
                     Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         }
+    }
 
+    private fun setupUI() {
         // Edit Profile button
         findViewById<CardView>(R.id.editProfileButton).setOnClickListener {
             startActivity(Intent(this, EditProfileActivity::class.java))
