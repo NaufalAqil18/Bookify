@@ -9,74 +9,139 @@ import androidx.appcompat.app.AppCompatActivity
 class CheckoutConfirmActivity : AppCompatActivity() {
 
     private lateinit var closeButton: ImageView
+    private var autoCloseScheduled = false
 
     companion object {
         const val TAG = "CheckoutConfirmActivity"
+        private const val AUTO_CLOSE_DELAY = 5000L // 5 seconds
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_checkout_confirm)
+        
+        try {
+            setContentView(R.layout.activity_checkout_confirm)
+            Log.d(TAG, "🎉 CheckoutConfirmActivity created")
 
-        Log.d(TAG, "🎉 CheckoutConfirmActivity created - Payment successful!")
+            initViews()
+            setupClickListeners()
+            scheduleAutoClose()
 
-        initViews()
-        setupClickListeners()
-
-        // Auto close after 5 seconds (optional)
-        scheduleAutoClose()
+            // Finish the checkout activity
+            finishCheckoutActivity()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error initializing CheckoutConfirmActivity", e)
+            navigateToHome()
+        }
     }
 
     private fun initViews() {
-        closeButton = findViewById(R.id.btn_close)
-        Log.d(TAG, "✅ Views initialized")
+        try {
+            closeButton = findViewById(R.id.btn_close)
+            Log.d(TAG, "✅ Views initialized")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error initializing views", e)
+            throw e
+        }
     }
 
     private fun setupClickListeners() {
-        closeButton.setOnClickListener {
-            Log.d(TAG, "❌ Close button clicked")
+        try {
+            closeButton.setOnClickListener {
+                Log.d(TAG, "❌ Close button clicked")
+                navigateToHome()
+            }
+
+            // Allow clicking anywhere on screen to close
+            findViewById<androidx.constraintlayout.widget.ConstraintLayout>(android.R.id.content).setOnClickListener {
+                Log.d(TAG, "📱 Screen tapped - closing confirmation")
+                navigateToHome()
+            }
+
+            Log.d(TAG, "✅ Click listeners setup completed")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error setting up click listeners", e)
             navigateToHome()
         }
-
-        // Allow clicking anywhere on screen to close (optional)
-        findViewById<android.widget.RelativeLayout>(android.R.id.content).setOnClickListener {
-            Log.d(TAG, "📱 Screen tapped - closing confirmation")
-            navigateToHome()
-        }
-
-        Log.d(TAG, "✅ Click listeners setup completed")
     }
 
     private fun scheduleAutoClose() {
-        // Auto close after 5 seconds (you can remove this if not needed)
-        closeButton.postDelayed({
-            Log.d(TAG, "⏰ Auto closing confirmation screen")
-            navigateToHome()
-        }, 5000) // 5 seconds
+        if (autoCloseScheduled) return
+
+        try {
+            autoCloseScheduled = true
+            closeButton.postDelayed({
+                if (!isFinishing && !isDestroyed) {
+                    Log.d(TAG, "⏰ Auto closing confirmation screen")
+                    navigateToHome()
+                }
+            }, AUTO_CLOSE_DELAY)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error scheduling auto close", e)
+        }
+    }
+
+    private fun finishCheckoutActivity() {
+        try {
+            // Find and finish the checkout activity
+            for (activity in (application as? android.app.Application)?.activities() ?: emptyList()) {
+                if (activity is CheckoutActivity) {
+                    activity.finish()
+                    break
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error finishing checkout activity", e)
+        }
     }
 
     private fun navigateToHome() {
-        Log.d(TAG, "🏠 Navigating back to home")
+        try {
+            Log.d(TAG, "🏠 Navigating back to home")
 
-        // Create intent to go back to MainActivity and clear the task stack
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                    Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TASK
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+            finish()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error navigating to home", e)
+            finish()
         }
-
-        startActivity(intent)
-        finish()
     }
 
     override fun onBackPressed() {
-        // Override back button to navigate to home instead of previous screen
-        super.onBackPressed()
         navigateToHome()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        closeButton.removeCallbacks(null)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "🔄 CheckoutConfirmActivity destroyed")
+    }
+}
+
+// Extension function to get all activities
+private fun android.app.Application.activities(): List<android.app.Activity> {
+    return try {
+        val activityThreadClass = Class.forName("android.app.ActivityThread")
+        val activityThread = activityThreadClass.getMethod("currentActivityThread").invoke(null)
+        val activitiesField = activityThreadClass.getDeclaredField("mActivities")
+        activitiesField.isAccessible = true
+        
+        @Suppress("UNCHECKED_CAST")
+        val activities = activitiesField.get(activityThread) as? android.util.ArrayMap<Any, Any>
+        
+        activities?.values?.mapNotNull {
+            val activityRecordClass = it.javaClass
+            val activityField = activityRecordClass.getDeclaredField("activity")
+            activityField.isAccessible = true
+            activityField.get(it) as? android.app.Activity
+        } ?: emptyList()
+    } catch (e: Exception) {
+        emptyList()
     }
 }
