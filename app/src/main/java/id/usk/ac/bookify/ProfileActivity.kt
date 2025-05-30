@@ -9,25 +9,59 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.cardview.widget.CardView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ProfileActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
         auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
 
         setupUI()
         setupBottomNavigation()
     }
 
     private fun setupUI() {
-        // Set username from Firebase
         val currentUser = auth.currentUser
         val usernameText = findViewById<TextView>(R.id.usernameText)
-        usernameText.text = currentUser?.displayName ?: "User"
+        val joinedText = findViewById<TextView>(R.id.joinedText)
+        
+        currentUser?.let { user ->
+            db.collection("users")
+                .document(user.uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document != null && document.exists()) {
+                        // Get username
+                        val username = document.getString("username") ?: "User"
+                        usernameText.text = username
+
+                        // Get and format join date
+                        val createdAt = document.getLong("createdAt")
+                        if (createdAt != null) {
+                            val date = Date(createdAt)
+                            val formatter = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+                            joinedText.text = "Joined in ${formatter.format(date)}"
+                        }
+                    } else {
+                        usernameText.text = "User"
+                        joinedText.text = "Joined in 2024"
+                    }
+                }
+                .addOnFailureListener { e ->
+                    usernameText.text = "User"
+                    joinedText.text = "Joined in 2024"
+                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
 
         // Edit Profile button
         findViewById<CardView>(R.id.editProfileButton).setOnClickListener {
