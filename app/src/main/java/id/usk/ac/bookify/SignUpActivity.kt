@@ -10,18 +10,19 @@ import android.widget.Toast
 // Hapus R jika tidak digunakan secara eksplisit di sini, Android Studio akan mengurusnya
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore // Import Firestore
 import com.google.firebase.firestore.ktx.firestore // Import Firestore KTX
 import com.google.firebase.ktx.Firebase
 
 class SignUpActivity : AppCompatActivity() {
-    lateinit var etEmail: EditText
-    lateinit var etConfPass: EditText
+    private lateinit var etEmail: EditText
+    private lateinit var etConfPass: EditText
     private lateinit var etPass: EditText
     private lateinit var btnSignUp: Button
-    lateinit var tvRedirectLogin: TextView
-    lateinit var etUsername: EditText // Tambahkan ini
-    lateinit var etPhoneNumber: EditText // Tambahkan ini
+    private lateinit var tvRedirectLogin: TextView
+    private lateinit var etUsername: EditText // Tambahkan ini
+    private lateinit var etPhoneNumber: EditText // Tambahkan ini
 
     // create Firebase authentication object
     private lateinit var auth: FirebaseAuth
@@ -84,48 +85,59 @@ class SignUpActivity : AppCompatActivity() {
                 .show()
             return
         }
-        // If all credential are correct
-        // We call createUserWithEmailAndPassword
-        // using auth object and pass the
-        // email and pass in it.
-        auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(this) { task ->
-            if (task.isSuccessful) {
-                Toast.makeText(this, "Berhasil Daftar", Toast.LENGTH_SHORT).show()
-                // Dapatkan UID pengguna yang baru dibuat
-                val firebaseUser = auth.currentUser
-                firebaseUser?.let {
-                    val userId = it.uid
-                    // Simpan informasi tambahan ke Firestore
-                    saveAdditionalUserInfo(userId, username, email, phoneNumber)
+
+        // Disable signup button to prevent multiple clicks
+        btnSignUp.isEnabled = false
+
+        auth.createUserWithEmailAndPassword(email, pass)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val firebaseUser = auth.currentUser
+                    
+                    // Update display name
+                    val profileUpdates = userProfileChangeRequest {
+                        displayName = username
+                    }
+
+                    firebaseUser?.updateProfile(profileUpdates)
+                        ?.addOnCompleteListener { profileTask ->
+                            if (profileTask.isSuccessful) {
+                                // Save additional user info to Firestore
+                                saveUserToFirestore(firebaseUser.uid, username, email, phoneNumber)
+                            } else {
+                                Toast.makeText(this, "Gagal mengupdate profil: ${profileTask.exception?.message}", Toast.LENGTH_SHORT).show()
+                                btnSignUp.isEnabled = true
+                            }
+                        }
+                } else {
+                    Toast.makeText(this, "Pendaftaran Gagal: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                    btnSignUp.isEnabled = true
                 }
-            } else {
-                Toast.makeText(this, "Pendaftaran Gagal! ${task.exception?.message}", Toast.LENGTH_LONG).show()
             }
-        }
     }
 
-    private fun saveAdditionalUserInfo(userId: String, username: String, email: String, phoneNumber: String) {
+    private fun saveUserToFirestore(userId: String, username: String, email: String, phoneNumber: String) {
         val user = hashMapOf(
             "username" to username,
             "email" to email,
-            "phoneNumber" to phoneNumber
-            // Anda bisa menambahkan field lain di sini jika perlu
+            "phoneNumber" to phoneNumber,
+            "createdAt" to System.currentTimeMillis()
         )
 
-        // Tambahkan dokumen baru dengan UID pengguna sebagai ID dokumen di koleksi "users"
-        db.collection("users").document(userId)
+        db.collection("users")
+            .document(userId)
             .set(user)
             .addOnSuccessListener {
-                Toast.makeText(this, "Info pengguna disimpan", Toast.LENGTH_SHORT).show()
-                // Arahkan ke Login Activity atau Main Activity setelah berhasil
+                Toast.makeText(this, "Pendaftaran berhasil!", Toast.LENGTH_SHORT).show()
+                // Redirect to Login
                 val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
-                finish() // Selesaikan SignUpActivity
+                finish()
             }
             .addOnFailureListener { e ->
-                Toast.makeText(this, "Gagal menyimpan info pengguna: ${e.message}", Toast.LENGTH_LONG).show()
-                // Anda mungkin ingin menangani kasus ini, misalnya menghapus user yang baru dibuat dari Auth
-                // atau mencoba menyimpan lagi. Untuk saat ini, kita hanya tampilkan pesan.
+                Toast.makeText(this, "Gagal menyimpan data: ${e.message}", Toast.LENGTH_SHORT).show()
+                btnSignUp.isEnabled = true
             }
     }
 }

@@ -48,7 +48,7 @@ class CheckoutActivity : AppCompatActivity() {
             if (CartManager.getCartItems().isEmpty()) {
                 Log.w(TAG, "⚠️ Attempted to checkout with empty cart")
                 Toast.makeText(this, "Your cart is empty!", Toast.LENGTH_SHORT).show()
-                finish()
+                navigateToCart()
                 return
             }
 
@@ -58,7 +58,7 @@ class CheckoutActivity : AppCompatActivity() {
         } catch (e: Exception) {
             Log.e(TAG, "Error initializing CheckoutActivity", e)
             Toast.makeText(this, "Error loading checkout", Toast.LENGTH_SHORT).show()
-            finish()
+            navigateToCart()
         }
     }
 
@@ -115,22 +115,27 @@ class CheckoutActivity : AppCompatActivity() {
     }
 
     private fun showPaymentOptions() {
-        val bottomSheet = BottomSheetDialog(this)
-        val view = layoutInflater.inflate(R.layout.bottom_sheet_payment_methods, null)
-        bottomSheet.setContentView(view)
+        try {
+            val bottomSheet = BottomSheetDialog(this)
+            val view = layoutInflater.inflate(R.layout.bottom_sheet_payment_methods, null)
+            bottomSheet.setContentView(view)
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.payment_methods_recycler)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        
-        val adapter = PaymentMethodAdapter(paymentMethods) { paymentMethod ->
-            selectedPaymentMethod = paymentMethod
-            selectedPaymentMethodText.text = paymentMethod.name
-            bottomSheet.dismiss()
-            Log.d(TAG, "Selected payment method: ${paymentMethod.name}")
+            val recyclerView = view.findViewById<RecyclerView>(R.id.payment_methods_recycler)
+            recyclerView.layoutManager = LinearLayoutManager(this)
+            
+            val adapter = PaymentMethodAdapter(paymentMethods) { paymentMethod ->
+                selectedPaymentMethod = paymentMethod
+                selectedPaymentMethodText.text = paymentMethod.name
+                bottomSheet.dismiss()
+                Log.d(TAG, "Selected payment method: ${paymentMethod.name}")
+            }
+            
+            recyclerView.adapter = adapter
+            bottomSheet.show()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error showing payment options", e)
+            Toast.makeText(this, "Error loading payment methods", Toast.LENGTH_SHORT).show()
         }
-        
-        recyclerView.adapter = adapter
-        bottomSheet.show()
     }
 
     private fun updateOrderSummary() {
@@ -162,7 +167,7 @@ class CheckoutActivity : AppCompatActivity() {
 
             if (cartItems.isEmpty()) {
                 Toast.makeText(this, "Your cart is empty!", Toast.LENGTH_SHORT).show()
-                finish()
+                navigateToCart()
                 return
             }
 
@@ -170,77 +175,107 @@ class CheckoutActivity : AppCompatActivity() {
             Log.d(TAG, "📍 Delivery Address: $deliveryAddress")
             Log.d(TAG, "💳 Payment Method: ${selectedPaymentMethod?.name}")
 
+            // Disable UI during payment processing
+            setLoadingState(true)
+
             // Simulate payment processing
             simulatePaymentProcess(total, itemCount)
         } catch (e: Exception) {
             Log.e(TAG, "Error processing payment", e)
             Toast.makeText(this, "Error processing payment", Toast.LENGTH_SHORT).show()
+            setLoadingState(false)
         }
+    }
+
+    private fun setLoadingState(isLoading: Boolean) {
+        payButton.isEnabled = !isLoading
+        payButton.text = if (isLoading) "Processing..." else "Pay $${String.format("%.2f", CartManager.getTotal())}"
+        payOptionLayout.isEnabled = !isLoading
+        changeAddressButton.isEnabled = !isLoading
+        addNewAddressButton.isEnabled = !isLoading
     }
 
     private fun simulatePaymentProcess(total: Double, itemCount: Int) {
         try {
             Log.d(TAG, "⏳ Simulating payment process...")
 
-            // Show loading state
-            payButton.isEnabled = false
-            payButton.text = "Processing..."
-
             // Simulate network delay
             payButton.postDelayed({
                 try {
-                    // Simulate successful payment
                     Log.d(TAG, "✅ Payment processed successfully")
-                    Log.d(TAG, "📦 Order created - Items: $itemCount, Total: $total")
-
-                    // Clear the cart after successful payment
+                    
+                    // Clear the cart first
                     CartManager.clearCart()
-
-                    // Navigate to success screen
-                    navigateToSuccessScreen()
+                    
+                    // Show confirmation screen
+                    showConfirmationScreen()
                 } catch (e: Exception) {
                     Log.e(TAG, "Error completing payment", e)
                     Toast.makeText(this, "Error completing payment", Toast.LENGTH_SHORT).show()
-                    payButton.isEnabled = true
-                    updateOrderSummary()
+                    setLoadingState(false)
                 }
             }, 2000) // 2 seconds delay to simulate processing
         } catch (e: Exception) {
             Log.e(TAG, "Error simulating payment", e)
             Toast.makeText(this, "Error processing payment", Toast.LENGTH_SHORT).show()
-            payButton.isEnabled = true
-            updateOrderSummary()
+            setLoadingState(false)
         }
     }
 
-    private fun navigateToSuccessScreen() {
+    private fun showConfirmationScreen() {
         try {
-            Log.d(TAG, "🎉 Navigating to success screen")
-
+            Log.d(TAG, "🎉 Showing confirmation screen")
+            
+            // Create and start confirmation activity
             val intent = Intent(this, CheckoutConfirmActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+            
+            // Don't finish this activity yet
+            // Let CheckoutConfirmActivity handle the navigation
+        } catch (e: Exception) {
+            Log.e(TAG, "Error showing confirmation screen", e)
+            Toast.makeText(this, "Error showing confirmation", Toast.LENGTH_SHORT).show()
+            navigateToHome()
+        }
+    }
+
+    private fun navigateToHome() {
+        try {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
             finish()
         } catch (e: Exception) {
-            Log.e(TAG, "Error navigating to success screen", e)
-            Toast.makeText(this, "Error completing checkout", Toast.LENGTH_SHORT).show()
+            Log.e(TAG, "Error navigating to home", e)
+            finish()
+        }
+    }
+
+    private fun navigateToCart() {
+        try {
+            val intent = Intent(this, CartActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+            finish()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error navigating to cart", e)
+            finish()
         }
     }
 
     override fun onResume() {
         super.onResume()
         try {
-            // Update order summary when returning to this activity
-            updateOrderSummary()
-
-            // Check if cart is still not empty
             if (CartManager.getCartItems().isEmpty()) {
                 Log.w(TAG, "⚠️ Cart is empty, finishing checkout")
                 Toast.makeText(this, "Your cart is empty!", Toast.LENGTH_SHORT).show()
-                finish()
+                navigateToCart()
+            } else {
+                updateOrderSummary()
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error in onResume", e)
+            navigateToCart()
         }
     }
 
