@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 
 class CheckoutConfirmActivity : AppCompatActivity() {
 
@@ -39,7 +40,7 @@ class CheckoutConfirmActivity : AppCompatActivity() {
         }
 
         // Allow clicking anywhere on screen to close (optional)
-        findViewById<android.widget.RelativeLayout>(android.R.id.content).setOnClickListener {
+        findViewById<ConstraintLayout>(android.R.id.content).setOnClickListener {
             Log.d(TAG, "📱 Screen tapped - closing confirmation")
             navigateToHome()
         }

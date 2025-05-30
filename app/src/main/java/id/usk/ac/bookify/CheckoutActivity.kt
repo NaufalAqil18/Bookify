@@ -215,10 +215,13 @@ class CheckoutActivity : AppCompatActivity() {
 
     private fun navigateToSuccessScreen() {
         try {
-            Log.d(TAG, "🎉 Navigating to success screen")
+            Log.d(TAG, "🎉 Showing confirmation screen")
 
-            val intent = Intent(this, CheckoutConfirmActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            val intent = Intent(this, CheckoutConfirmActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or 
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
             startActivity(intent)
             finish()
         } catch (e: Exception) {
