@@ -204,11 +204,21 @@ class CheckoutActivity : AppCompatActivity() {
                 try {
                     Log.d(TAG, "✅ Payment processed successfully")
                     
-                    // Clear the cart first
-                    CartManager.clearCart()
-                    
-                    // Show confirmation screen
-                    showConfirmationScreen()
+                    // Save purchase history
+                    val cartItems = CartManager.getCartItems()
+                    PurchaseHistoryManager.savePurchaseHistory(cartItems) { success ->
+                        if (success) {
+                            Log.d(TAG, "✅ Purchase history saved")
+                        } else {
+                            Log.e(TAG, "❌ Failed to save purchase history")
+                        }
+                        
+                        // Clear the cart first
+                        CartManager.clearCart()
+                        
+                        // Show confirmation screen
+                        showConfirmationScreen()
+                    }
                 } catch (e: Exception) {
                     Log.e(TAG, "Error completing payment", e)
                     Toast.makeText(this, "Error completing payment", Toast.LENGTH_SHORT).show()
